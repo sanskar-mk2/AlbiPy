@@ -45,20 +45,20 @@ connection = create_db_connection("64.226.95.45", "sanskar", "pass", "albion")
 
 
 def read_query(connection, query):
-    cursor = connection.cursor()
-    result = None
     try:
+        cursor = connection.cursor()
+        result = None
         cursor.execute(query)
         result = cursor.fetchall()
-        cursor.close()
         return result
     except Error as err:
         print(f"Error: '{err}'")
 
+    cursor.close()
 
 def execute_query(connection, query):
-    cursor = connection.cursor()
     try:
+        cursor = connection.cursor()
         cursor.execute(query)
         connection.commit()
         print("Query successful")
