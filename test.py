@@ -50,23 +50,21 @@ def read_query(connection, query):
         result = None
         cursor.execute(query)
         result = cursor.fetchall()
+        cursor.close()
         return result
     except Error as err:
         print(f"Error: '{err}'")
 
-    cursor.close()
 
 def execute_query(connection, query):
     try:
         cursor = connection.cursor()
         cursor.execute(query)
         connection.commit()
+        cursor.close()
         print("Query successful")
     except Error as err:
         print(f"Error: '{err}'")
-
-    cursor.close()
-
 
 
 create_table = """
@@ -170,7 +168,6 @@ if __name__ == "__main__":
             """
 
             result = read_query(connection, query_database)
-
 
             # upsert based on location, auction type and itemtypeid
             for i in range(len(df_found)):
