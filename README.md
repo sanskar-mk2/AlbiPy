@@ -1,5 +1,5 @@
 ## What is AlbiPy?
-AlbiPy is a network sniffing tool that allows direct access to the Albion Online Client's market data through Python. It captures market orders in real-time and can store them in CSV files or databases.
+AlbiPy is a network sniffing tool that allows direct access to the Albion Online Client's market data through Python. It captures market orders in real-time and can store them in CSV files or databases. AlbiPy can be paired with [AlbiVel](https://github.com/sanskar-mk2/AlbiVel), an enhanced marketplace explorer for Albion Online designed to work seamlessly with AlbiPy for market data collection.
 
 **Note: AlbiPy has been tested on Linux and Windows. It is not guaranteed to work on older Windows versions or Mac OS. Contributions for testing on other operating systems are welcome.**
 
