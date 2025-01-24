@@ -1,52 +1,55 @@
-from AlbiPy import sniffing_thread
-from AlbiPy import HEADERS
+from AlbiPy import sniffing_thread, HEADERS
 from time import sleep
 
 
-def orders_to_csv(orders, filename):
-    # open file
-    output_file = open(output_filename, "w")
+class MarketDataRecorder:
+    def __init__(self):
+        self.output_filename = None
+        self.thread = None
 
-    # write headers to file
-    output_file.write(",".join(HEADERS)+"\n")
+    def write_orders_to_csv(self, orders):
+        """Write market orders to CSV file"""
+        with open(self.output_filename, "w") as output_file:
+            # Write headers
+            output_file.write(",".join(HEADERS) + "\n")
+            
+            # Write order data
+            for order in orders:
+                output_file.write(",".join(map(str, order.data)) + "\n")
 
-    # write parsed datapoints to file
-    for order in orders:
-        output_file.write(",".join(list(map(str, order.data)))+"\n")
+    def start_recording(self):
+        """Initialize and start the recording process"""
+        self.output_filename = input("Output csv filename: ")
+        
+        print("Starting sniffing thread...\nHit ctrl-c to stop recording and save results!")
+        self.thread = sniffing_thread()
+        self.thread.start()
 
-    # close output file
-    output_file.close()
+        try:
+            while True:
+                print("Waiting three seconds...")
+                sleep(3)
+
+                print("Fetching recorded orders...")
+                orders = self.thread.get_data()
+
+                print(f"Writing recorded orders to {self.output_filename}")
+                self.write_orders_to_csv(orders)
+
+        except KeyboardInterrupt:
+            self.stop_recording()
+
+    def stop_recording(self):
+        """Stop recording and save final data"""
+        self.thread.stop()
+        print("\nThread stopped!")
+
+        # Save any remaining orders
+        final_orders = self.thread.get_data()
+        print(f"Writing remaining orders to {self.output_filename}")
+        self.write_orders_to_csv(final_orders)
 
 
-# get output filename from user
-output_filename = input("Output csv filename: ")
-
-# initialize and start sniffing thread
-print("Starting sniffing thread...\nHit ctrl-c to stop recording and save results!")
-thread = sniffing_thread()
-thread.start()
-
-# fetch recorded market orders and write them to file every three seconds
-try:
-    while True:
-        print("Waiting three seconds...")
-        sleep(3)
-
-        print("Fetching recorded orders...")
-        orders = thread.get_data()
-
-        print("Writing recorded orders to", output_filename)
-        orders_to_csv(orders, output_filename)
-except KeyboardInterrupt:
-    pass
-
-# stop sniffing thread
-thread.stop()
-print("\nThread stopped!")
-
-# fetch captured data
-orders = thread.get_data()
-
-# write any outstanding orders to csv
-print("Writing remaining orders to", output_filename)
-orders_to_csv(orders, output_filename)
+if __name__ == "__main__":
+    recorder = MarketDataRecorder()
+    recorder.start_recording()
